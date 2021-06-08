@@ -146,7 +146,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         curDepth = -1
         currentAgentIndex = 0
-        return self.value(self, gameState, currentAgentIndex, curDepth)
+        return self.value(gameState, currentAgentIndex, curDepth)
 
 
     def value(self, gameState, currentAgentIndex, curDepth):
@@ -158,20 +158,20 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
 
         if currentAgentIndex == self.pacmanIndex:
-            return self.maxValue(self, gameState, currentAgentIndex, curDepth)
+            return self.maxValue(gameState, currentAgentIndex, curDepth)
         else:
-            return self.minValue(self, gameState, currentAgentIndex, curDepth)
+            return self.minValue(gameState, currentAgentIndex, curDepth)
         
     def minValue(self, gameState, currentAgentIndex, curDepth):
         v = float("inf")
         for action in gameState.getLegalActions(currentAgentIndex):
-            v = min(v, self.value(self, gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
+            v = min(v, self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
         return v
 
     def maxValue(self, gameState, currentAgentIndex, curDepth):
         v = -1*float("inf")
         for action in gameState.getLegalActions(currentAgentIndex):
-            v = max(v, self.value(self, gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
+            v = max(v, self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
         return v
 
 
