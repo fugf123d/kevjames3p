@@ -144,14 +144,15 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        curDepth = -1
+        curDepth = 0
         currentAgentIndex = 0
-        return self.value(gameState, currentAgentIndex, curDepth)
+        val = self.value(gameState, currentAgentIndex, curDepth)
+        print "Returning %s" % str(val)
+        return val[0]
 
-
-    def value(self, gameState, currentAgentIndex, curDepth):
+    def value(self, gameState, currentAgentIndex, curDepth): 
         if currentAgentIndex >= gameState.getNumAgents():
-            currentAgentIndex == 0
+            currentAgentIndex = 0
             curDepth += 1
 
         if curDepth == self.depth:
@@ -163,15 +164,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.minValue(gameState, currentAgentIndex, curDepth)
         
     def minValue(self, gameState, currentAgentIndex, curDepth):
-        v = float("inf")
+        v = ("unknown", float("inf"))
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+
         for action in gameState.getLegalActions(currentAgentIndex):
-            v = min(v, self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            vNew = min(v[1], retVal)
+
+            if vNew is not v[1]:
+                v = (action, vNew) 
+        
+        #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
 
     def maxValue(self, gameState, currentAgentIndex, curDepth):
-        v = -1*float("inf")
+        v = ("unknown", -1*float("inf"))
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+
         for action in gameState.getLegalActions(currentAgentIndex):
-            v = max(v, self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth))
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            vNew = max(v[1], retVal)
+
+            if vNew is not v[1]:
+                v = (action, vNew) 
+        
+        #print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
 
 
