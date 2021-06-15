@@ -209,17 +209,75 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
-  """
+    """
     Your minimax agent with alpha-beta pruning (question 3)
-  """
-
-  def getAction(self, gameState):
     """
-      Returns the minimax action using self.depth and self.evaluationFunction
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    def getAction(self, gameState):
+        curDepth = 0
+        currentAgentIndex = 0
+        val = self.value(gameState, currentAgentIndex, curDepth)
+        print "Returning %s" % str(val)
+        return val[0]
 
+    def value(self, gameState, currentAgentIndex, curDepth, alpha, beta): 
+        if currentAgentIndex >= gameState.getNumAgents():
+            currentAgentIndex = 0
+            curDepth += 1
+
+        if curDepth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        if currentAgentIndex == self.pacmanIndex:
+            return self.maxValue(gameState, currentAgentIndex, curDepth)
+        else:
+            return self.minValue(gameState, currentAgentIndex, curDepth)
+        
+    def minValue(self, gameState, currentAgentIndex, curDepth, alpha, beta):
+        v = ("unknown", float("inf"))
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+
+        for action in gameState.getLegalActions(currentAgentIndex):
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            vNew = min(v[1], retVal)
+
+            if vNew is not v[1]:
+                v = (action, vNew) 
+        
+        #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        return v
+
+    def maxValue(self, gameState, currentAgentIndex, curDepth, alpha, beta):
+        v = ("unknown", -1*float("inf"))
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+
+        for action in gameState.getLegalActions(currentAgentIndex):
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            vNew = max(v[1], retVal)
+
+            if vNew is not v[1]:
+                v = (action, vNew) 
+        
+        #print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        return v
+
+
+ 
 class ExpectimaxAgent(MultiAgentSearchAgent):
   """
     Your expectimax agent (question 4)
