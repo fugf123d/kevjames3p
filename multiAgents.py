@@ -215,7 +215,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def getAction(self, gameState):
         curDepth = 0
         currentAgentIndex = 0
-        val = self.value(gameState, currentAgentIndex, curDepth)
+        alpha = -1*float("inf")
+        beta = float("inf")
+        val = self.value(gameState, currentAgentIndex, curDepth, alpha, beta)
         print "Returning %s" % str(val)
         return val[0]
 
@@ -228,9 +230,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
 
         if currentAgentIndex == self.pacmanIndex:
-            return self.maxValue(gameState, currentAgentIndex, curDepth)
+            return self.maxValue(gameState, currentAgentIndex, curDepth, alpha, beta)
         else:
-            return self.minValue(gameState, currentAgentIndex, curDepth)
+            return self.minValue(gameState, currentAgentIndex, curDepth, alpha, beta)
         
     def minValue(self, gameState, currentAgentIndex, curDepth, alpha, beta):
         v = ("unknown", float("inf"))
@@ -242,7 +244,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if action == "Stop":
                 continue
             
-            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth, alpha, beta)
             if type(retVal) is tuple:
                 retVal = retVal[1] 
 
@@ -250,6 +252,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
             if vNew is not v[1]:
                 v = (action, vNew) 
+            
+            if v[0] <= alpha:
+                return v
+            
+            beta = min(beta, v[0])
         
         #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
@@ -264,7 +271,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if action == "Stop":
                 continue
             
-            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth, alpha, beta)
             if type(retVal) is tuple:
                 retVal = retVal[1] 
 
@@ -272,7 +279,12 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
             if vNew is not v[1]:
                 v = (action, vNew) 
-        
+            
+            if v[0] >= beta:
+                return v
+
+            alpha = max(alpha, v[1])
+
         #print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
 
