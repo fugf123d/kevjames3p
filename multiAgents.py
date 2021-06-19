@@ -226,7 +226,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             currentAgentIndex = 0
             curDepth += 1
 
-        if curDepth == self.depth:
+        if curDepth == self.depth or gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState)
 
         if currentAgentIndex == self.pacmanIndex:
@@ -254,11 +254,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 v = (action, vNew) 
             
             if v[0] <= alpha:
+                print "Pruning with '%s' from min since alpha is %2.2f" % (str(v), alpha)
                 return v
             
             beta = min(beta, v[0])
+            print "Setting beta to %2.2f" % beta
         
-        #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
 
     def maxValue(self, gameState, currentAgentIndex, curDepth, alpha, beta):
@@ -281,11 +283,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 v = (action, vNew) 
             
             if v[0] >= beta:
+                print "Pruning with '%s' from min since beta is %2.2f" % (str(v), beta)
                 return v
 
             alpha = max(alpha, v[1])
+            print "Setting alpha to %2.2f" % alpha
 
-        #print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return v
 
 
