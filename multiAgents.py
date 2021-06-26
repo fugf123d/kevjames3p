@@ -295,19 +295,93 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
  
 class ExpectimaxAgent(MultiAgentSearchAgent):
-  """
+    """
     Your expectimax agent (question 4)
-  """
-
-  def getAction(self, gameState):
     """
-      Returns the expectimax action using self.depth and self.evaluationFunction
 
-      All ghosts should be modeled as choosing uniformly at random from their
-      legal moves.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    def getAction(self, gameState):
+        """
+          Returns the minimax action from the current gameState using self.depth
+          and self.evaluationFunction.
+
+          Here are some method calls that might be useful when implementing minimax.
+
+          gameState.getLegalActions(agentIndex):
+            Returns a list of legal actions for an agent
+            agentIndex=0 means Pacman, ghosts are >= 1
+
+          Directions.STOP:
+            The stop direction, which is always legal
+
+          gameState.generateSuccessor(agentIndex, action):
+            Returns the successor game state after an agent takes an action
+
+          gameState.getNumAgents():
+            Returns the total number of agents in the game
+        """
+        "*** YOUR CODE HERE ***"
+        curDepth = 0
+        currentAgentIndex = 0
+        val = self.value(gameState, currentAgentIndex, curDepth)
+        print "Returning %s" % str(val)
+        return val[0]
+
+    def value(self, gameState, currentAgentIndex, curDepth): 
+        if currentAgentIndex >= gameState.getNumAgents():
+            currentAgentIndex = 0
+            curDepth += 1
+
+        if curDepth == self.depth:
+            return self.evaluationFunction(gameState)
+
+        if currentAgentIndex == self.pacmanIndex:
+            return self.maxValue(gameState, currentAgentIndex, curDepth)
+        else:
+            return self.expValue(gameState, currentAgentIndex, curDepth)
+        
+    def expValue(self, gameState, currentAgentIndex, curDepth):
+        v = ["unknown", 0]
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+        
+        prob = 1/len(gameState.getLegalActions(currentAgentIndex))
+        
+        for action in gameState.getLegalActions(currentAgentIndex):
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            v[1] += retVal * prob  
+        
+        #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        return tuple(v)
+
+    def maxValue(self, gameState, currentAgentIndex, curDepth):
+        v = ("unknown", -1*float("inf"))
+        
+        if not gameState.getLegalActions(currentAgentIndex):
+            return self.evaluationFunction(gameState)
+
+        for action in gameState.getLegalActions(currentAgentIndex):
+            if action == "Stop":
+                continue
+            
+            retVal = self.value(gameState.generateSuccessor(currentAgentIndex, action), currentAgentIndex + 1, curDepth)
+            if type(retVal) is tuple:
+                retVal = retVal[1] 
+
+            vNew = max(v[1], retVal)
+
+            if vNew is not v[1]:
+                v = (action, vNew) 
+        
+        #print "Returning maxValue: '%s' for agent %d" % (str(v), currentAgentIndex)
+        return v
+ 
 
 def betterEvaluationFunction(currentGameState):
   """
