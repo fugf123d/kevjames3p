@@ -345,7 +345,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         if not gameState.getLegalActions(currentAgentIndex):
             return self.evaluationFunction(gameState)
         
-        prob = 1/len(gameState.getLegalActions(currentAgentIndex))
+        prob = 1.0/len(gameState.getLegalActions(currentAgentIndex))
         
         for action in gameState.getLegalActions(currentAgentIndex):
             if action == "Stop":
