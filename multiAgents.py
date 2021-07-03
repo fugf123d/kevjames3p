@@ -355,7 +355,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             if type(retVal) is tuple:
                 retVal = retVal[1] 
 
-            v[1] += retVal * prob  
+            v[1] += retVal * prob
+            v[0] = action
         
         #print "Returning minValue: '%s' for agent %d" % (str(v), currentAgentIndex)
         return tuple(v)
@@ -384,14 +385,46 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
  
 
 def betterEvaluationFunction(currentGameState):
-  """
+    """
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
-  """
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+    """        
+    "*** YOUR CODE HERE ***"
+    #Let's do the manhatten distance
+    distanceToFood = []
+    distanceToNearestGhost = []
+    score = 0
+
+    foodList = currentGameState.getFood().asList()
+    ghostStates = currentGameState.getGhostStates()
+
+    pacmanPos = list(currentGameState.getPacmanPosition())
+
+    for ghostState in ghostStates:
+        if ghostState.scaredTimer is 0:
+            distanceToNearestGhost.append(0)
+            continue
+
+        gCoord = ghostState.getPosition()
+        x = abs(gCoord[0] - pacmanPos[0])
+        y = abs(gCoord[1] - pacmanPos[1])
+        if (x+y) == 0:
+            distanceToNearestGhost.append(0)
+        else:
+            distanceToNearestGhost.append(-1.0/(x+y))
+
+    for food in foodList:
+        x = abs(food[0] - pacmanPos[0])
+        y = abs(food[1] - pacmanPos[1])
+        distanceToFood.append(-1*(x+y)) 
+
+    if not distanceToFood:
+        distanceToFood.append(0)
+
+    return max(distanceToFood) + min(distanceToNearestGhost) + currentGameState.getScore()
+ 
 
 # Abbreviation
 better = betterEvaluationFunction
