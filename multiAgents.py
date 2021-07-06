@@ -395,10 +395,12 @@ def betterEvaluationFunction(currentGameState):
     #Let's do the manhatten distance
     distanceToFood = []
     distanceToNearestGhost = []
+    distanceToCapsules = []
     score = 0
 
     foodList = currentGameState.getFood().asList()
     ghostStates = currentGameState.getGhostStates()
+    capsuleList = currentGameState.getCapsules()
 
     pacmanPos = list(currentGameState.getPacmanPosition())
 
@@ -418,12 +420,12 @@ def betterEvaluationFunction(currentGameState):
     for food in foodList:
         x = abs(food[0] - pacmanPos[0])
         y = abs(food[1] - pacmanPos[1])
-        distanceToFood.append(-1*(x+y)) 
+        distanceToFood.append(-1*(x+y))  
 
     if not distanceToFood:
         distanceToFood.append(0)
 
-    return max(distanceToFood) + min(distanceToNearestGhost) + currentGameState.getScore()
+    return max(distanceToFood) + min(distanceToNearestGhost) + currentGameState.getScore() - 20*len(capsuleList)
  
 
 # Abbreviation
